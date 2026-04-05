@@ -1,0 +1,44 @@
+import csv
+import re
+
+def convert_hapmap_to_vcf(hapmap_file, vcf_file):
+    with open(hapmap_file, 'r') as infile, open(vcf_file, 'w') as outfile:
+        reader = csv.reader(infile, delimiter='\t')
+        header = next(reader)
+
+        # Extract sample names from header (after the fixed hapmap columns)
+        sample_names = header[11:]
+
+        # Write VCF header
+        outfile.write("##fileformat=VCFv4.2\n")
+        outfile.write("##source=Custom_Hapmap_Converter\n")
+        outfile.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" + "\t".join(sample_names) + "\n")
+
+        for line in reader:
+            rs_id, alleles, chrom, pos, strand, *_ = line[:11]
+            genotypes = line[11:]
+
+            pos = int(pos)  # Ensure position is an integer
+            allele_list = alleles.split('/')
+            ref_allele = allele_list[0]  # First allele as reference
+            alt_alleles = allele_list[1:]  # Other alleles as ALT
+
+            if not alt_alleles:
+                continue  # Skip monomorphic sites
+
+            for alt in alt_alleles:
+                updated_genotypes = []
+                for gt in genotypes:
+                    if gt == ref_allele:
+                        updated_genotypes.append("0/0")
+                    elif gt == alt:
+                        updated_genotypes.append("1/1")
+                    elif gt == 'NN':
+                        updated_genotypes.append("./.")  # Missing data
+                    else:
+                        updated_genotypes.append("0/1")  # Heterozygous
+
+                outfile.write(f"{chrom}\t{pos}\t{rs_id}\t{ref_allele}\t{alt}\t.\tPASS\t.\tGT\t" + "\t".join(updated_genotypes) + "\n")
+
+# Example usage
+convert_hapmap_to_vcf("input.hmp.txt", "output.vcf")

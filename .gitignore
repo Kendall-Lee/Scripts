@@ -1,0 +1,46 @@
+# Data files (too large for version control)
+*.bam
+*.bai
+*.fasta
+*.fa
+*.fastq
+*.fq
+*.gz
+*.fai
+*.vcf
+*.vcf.gz
+*.tbi
+*.bed
+*.sam
+*.cram
+
+# Khufu project scripts (private)
+*[Kk]hufu*
+*[Kk]hufupan*
+*khufu*
+
+# Non-script files
+*.pdf
+*.xlsx
+*.xls
+*.docx
+*.doc
+*.png
+*.jpg
+*.jpeg
+*.heic
+*.zip
+*.csv
+*.txt
+*.rds
+*.RData
+*.Rhistory
+
+# System files
+.DS_Store
+*.DS_Store
+
+# Other
+*.shj
+*.shg
+Untitled
